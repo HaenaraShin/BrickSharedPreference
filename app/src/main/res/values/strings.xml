@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BrickSharedPrefSample</string>
+    <string name="Encrypt">ENCRYPT</string>
+    <string name="origin_file_name">Original File name :</string>
+</resources>
