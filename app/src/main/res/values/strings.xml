@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">BrickSharedPrefSample</string>
     <string name="Encrypt">ENCRYPT</string>
+    <string name="Decrypt">DECRYPT</string>
     <string name="origin_file_name">Original File name :</string>
+    <string name="encrypted_file_name">Encrypted File name :</string>
 </resources>

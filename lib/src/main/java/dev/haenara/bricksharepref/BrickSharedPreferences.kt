@@ -5,35 +5,35 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 
+/**
+ * For safe, BrickSharedPreferences does not use same name with legacy SharedPreferences.
+ * Simply add prefix 'brick_' at front of legacy SharedPreferences's name
+ */
 const val BRICK_FILE_PREFIX = "brick_"
 
-//class BrickSharedPreferences (private val mContext: Context, private val mFile: String) :
-//    SharedPreferences by EncryptedSharedPreferences.create(
-//        "$BRICK_FILE_PREFIX$mFile",
-//        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-//        mContext,
-//        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-//        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-//    ){
-class BrickSharedPreferences (private val mContext: Context, private val mFile: String) :
-    SharedPreferences{
+/**
+ * With extension function, BrickSharedPreferences helps you to change legacy codes.
+ */
+fun Context.getBrickSharedPreferences(fileName: String, type: Int = 0) = BrickSharedPreferences(this, fileName)
 
-    val keySpec = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-    val mSharedPreferences = EncryptedSharedPreferences.create(
+/**
+ * BrickSharedPreferences helps you to migrate legacy SharedPreferences to EncryptedSharedPreferences.
+ */
+class BrickSharedPreferences (private val mContext: Context, private val mFile: String) :
+    SharedPreferences by EncryptedSharedPreferences.create(
         "$BRICK_FILE_PREFIX$mFile",
-        keySpec,
+        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
         mContext,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    ){
 
     val mFileName = "$BRICK_FILE_PREFIX$mFile"
 
-    inner class LegacySharedPreferences
-        : SharedPreferences by mContext.getSharedPreferences(mFile, Context.MODE_PRIVATE)
-
-    val legacy = LegacySharedPreferences()
-
+    /**
+     * Migrate legacy SharedPreferences to EncryptedSharedPreferences.
+     * Copy all legacy data and encrypt it.
+     */
     fun migrateEncryptedSharedPreferences() {
         copyToBrick(getLegacyDatasets())
         clearLegacy()
@@ -53,32 +53,18 @@ class BrickSharedPreferences (private val mContext: Context, private val mFile: 
         }
     }
 
+    /**
+     * Get rid of all datas from legacy SharedPreferences.
+     */
     private fun clearLegacy() {
-        legacy.all.clear()
+        legacy.edit().clear().apply()
     }
 
-    override fun contains(key: String?) = mSharedPreferences.contains(key)
+    /**
+     * If you need to use a legacy SharedPreferences, simply can access it as follows.
+     */
+    inner class LegacySharedPreferences
+        : SharedPreferences by mContext.getSharedPreferences(mFile, Context.MODE_PRIVATE)
 
-    override fun getBoolean(key: String?, defValue: Boolean) = mSharedPreferences.getBoolean(key, defValue)
-
-    override fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?)
-     = mSharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
-
-    override fun getInt(key: String?, defValue: Int) = mSharedPreferences.getInt(key, defValue)
-
-    override fun getAll(): MutableMap<String, *> = mSharedPreferences.all
-
-    override fun edit(): SharedPreferences.Editor = mSharedPreferences.edit()
-
-    override fun getLong(key: String?, defValue: Long) = mSharedPreferences.getLong(key, defValue)
-
-    override fun getFloat(key: String?, defValue: Float) = mSharedPreferences.getFloat(key, defValue)
-
-    override fun getStringSet(key: String?, defValues: MutableSet<String>?) = mSharedPreferences.getStringSet(key, defValues)
-
-    override fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?)
-    = mSharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-
-    override fun getString(key: String?, defValue: String?) = mSharedPreferences.getString(key, defValue)
-
+    val legacy = LegacySharedPreferences()
 }
