@@ -1,4 +1,4 @@
-BrickSharedPreferences
+🧱 BrickSharedPreferences
 ===================================
 
 ![BrickSharedPreferences](brick_title.png)
@@ -7,29 +7,44 @@ BrickSharedPreferences
 
 # Introduce
 
-- Simple way to keep your SharedPreferences safe and secure.
+- Simple way to keep your SharedPreferences secure and safe.
 
 - This android library support migration legacy SharedPreferences to EncryptedSharedPreferences.
 
+- **This library requires minSdk 23.**
+
 # How To Use
 
-- You may have used SharedPreferences like follow.
+![How it works](how_it_works.PNG)
 
-```
-mSharedPreferences = getSharedPreferences(fileName, Context.MODE_PRIVATE)
-```
-- To migrate it to EncryptedSharedPreferences, change codes like follow.  
+- BrickSharedPreferences deletes the legacy SharedPreferences file, and copies and encrypts as a new file name start with  "brick_".
 
-```
-mSharedPreferences = getBrickSharedPreferences(fileName, Context.MODE_PRIVATE)
-```
+- After migration, just use a BrickSharedPreferences instance instead of SharedPreferences. 
+
+
+## How to Migrate
 
 - When you encrypt existing plain-text data and get rid of legacy plain-text data, use follow method.
-
 ```
 BrickSharedPreferences.migrateEncryptedSharedPreferences()
 ```
+- and all is done! 🎉
 
+## How to Access EncryptedSharedPreferences
+
+- You may have used SharedPreferences before like follow.
+```
+// Probably your legacy code looks like this...
+mSharedPreferences = getSharedPreferences(fileName, Context.MODE_PRIVATE)
+```
+- After migration, use a BrickSharedPreferences instance instead of SharedPreferences.
+
+- All you have to do is changing codes like follow.  
+
+```
+// Only difference is adding "Brick" when you get SharedPreferences. 
+mSharedPreferences = getBrickSharedPreferences(fileName, Context.MODE_PRIVATE)
+```
 - and all is done! 🎉
 
 
