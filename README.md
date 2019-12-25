@@ -9,9 +9,9 @@
 
 - Simple way to keep your SharedPreferences secure and safe.
 
-- This android library support migration legacy SharedPreferences to EncryptedSharedPreferences.
+- Support migration legacy SharedPreferences to EncryptedSharedPreferences.
 
-- **This library requires minSdk 23.**
+- **Require minSdk 23.**
 
 # How To Use
 
@@ -24,11 +24,11 @@
 
 ## How to Migrate
 
-- When you encrypt existing plain-text data and get rid of legacy plain-text data, use follow method.
+- When you encrypt existing plain-text data and get rid of legacy plain-text data, follow this method:
 ```
 BrickSharedPreferences.migrateEncryptedSharedPreferences()
 ```
-- and all is done! 🎉
+- And all is done! 🎉
 
 ## How to Access EncryptedSharedPreferences
 
@@ -39,13 +39,13 @@ mSharedPreferences = getSharedPreferences(fileName, Context.MODE_PRIVATE)
 ```
 - After migration, use a BrickSharedPreferences instance instead of SharedPreferences.
 
-- All you have to do is changing codes like follow.  
+- All you have to do is changing codes like this:  
 
 ```
 // Only difference is adding "Brick" when you get SharedPreferences. 
 mSharedPreferences = getBrickSharedPreferences(fileName, Context.MODE_PRIVATE)
 ```
-- and all is done! 🎉
+- And all is done! 🎉
 
 
 # Licences
