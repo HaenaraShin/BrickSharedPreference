@@ -7,7 +7,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 23
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -23,6 +23,21 @@ android {
         }
     }
 
+    flavorDimensions "api"
+    productFlavors {
+        jetpack {
+            dimension "api"
+            minSdkVersion 23
+        }
+        minApi19 {
+            dimension "api"
+            minSdkVersion 19
+        }
+    }
+
+
+
+
 }
 
 dependencies {
@@ -30,7 +45,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.core:core-ktx:1.0.2'
-    implementation "androidx.security:security-crypto:1.0.0-alpha02"
+    jetpackImplementation "androidx.security:security-crypto:1.0.0-alpha02"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'

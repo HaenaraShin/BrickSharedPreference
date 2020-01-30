@@ -11,10 +11,10 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 
-class BrickSharedPreferenceUnder23 (private val mContext: Context, private val mFile: String) :
+class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private val mFile: String) :
     SharedPreferences {
 
-    private val mSharedPreferences = mContext.getSharedPreferences("${BRICK_FILE_PREFIX}_$mFile", Context.MODE_PRIVATE)
+    private val mSharedPreferences = mContext.getSharedPreferences("${BRICK_FILE_PREFIX}$mFile", Context.MODE_PRIVATE)
     private val mKey = getKey()
 
     private fun getKey(): Any {
@@ -48,7 +48,7 @@ class BrickSharedPreferenceUnder23 (private val mContext: Context, private val m
     }
 
     override fun contains(key: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return mSharedPreferences.contains(key)
     }
 
     override fun getBoolean(key: String?, defValue: Boolean)
@@ -56,14 +56,20 @@ class BrickSharedPreferenceUnder23 (private val mContext: Context, private val m
 
 
     override fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
     override fun getInt(key: String?, defValue: Int)
             = get(key)?.decrypt()?.toInt() ?: defValue
 
     override fun getAll(): MutableMap<String, *> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+           return mutableMapOf<String, Any?>().apply {
+                mSharedPreferences.all.entries.forEach { entry->
+                    if (entry.value is String) {
+                        put(entry.key.decrypt(), "${entry.value}".decrypt())
+                    }
+                }
+            }
     }
 
     override fun edit() = Editor()
@@ -84,16 +90,16 @@ class BrickSharedPreferenceUnder23 (private val mContext: Context, private val m
     }
 
     override fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
     override fun getString(key: String?, defValue: String?)
             = get(key)?.decrypt() ?: defValue
 
     private fun String.decrypt() : String {
+        // TODO
         return replace("encrypted_" , "")
     }
-
 
     inner class Editor : SharedPreferences.Editor by mSharedPreferences.edit(){
         override fun putLong(key: String?, value: Long) = put(key, "$value")
@@ -123,11 +129,11 @@ class BrickSharedPreferenceUnder23 (private val mContext: Context, private val m
                 = put(key, "$value")
 
         private fun put(key: String?, value: String)
-                = mSharedPreferences.edit().putString(key, encrypt(value))
+                = mSharedPreferences.edit().putString(encrypt(key ?: ""), encrypt(value))
 
         private fun encrypt(plain: String) : String {
+            // TODO
             return "encrypted_$plain"
         }
     }
-
 }
