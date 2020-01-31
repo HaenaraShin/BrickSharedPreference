@@ -10,7 +10,6 @@ import org.json.JSONObject
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-
 class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private val mFile: String) :
     SharedPreferences {
 
@@ -35,10 +34,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
                 val md: MessageDigest = MessageDigest.getInstance("SHA")
                 md.update(signature.toByteArray())
                 key = Base64.encodeToString(md.digest(), Base64.DEFAULT)
-                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT))
-            } catch (e: NoSuchAlgorithmException) {
-                Log.e("KeyHash", "Unable to get MessageDigest. signature=$signature", e)
-            }
+            } catch (e: NoSuchAlgorithmException) { }
         }
         return key
     }

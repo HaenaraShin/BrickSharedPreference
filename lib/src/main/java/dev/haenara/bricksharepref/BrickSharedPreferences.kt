@@ -2,7 +2,9 @@ package dev.haenara.bricksharepref
 
 import android.content.Context
 import android.content.SharedPreferences
-import dev.haenara.bricksharepref.jetpack.JetpackEncryptedSharedPreferences
+import android.os.Build
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 
 /**
  * For safe, BrickSharedPreferences does not use same name with legacy SharedPreferences.
@@ -63,11 +65,16 @@ class BrickSharedPreferences (private val mContext: Context, private val mFile: 
 
     companion object SharePreferencesFactory {
         private fun getInstance(file: String, context: Context) : SharedPreferences {
-            return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                // Use Jetpack
-                JetpackEncryptedSharedPreferences.create(file, context)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // Use Jetpack (minSdk 23)
+                EncryptedSharedPreferences.create(
+                    "$BRICK_FILE_PREFIX$file",
+                    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+                    context,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
             } else {
-                // Without Jetpack
+                // Without Jetpack (minSdk 19)
                 EncryptedSharedPreferenceUnder23(context, file)
             }
         }

@@ -1,2 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dev.haenara.bricksharepref" />
+    xmlns:tools="http://schemas.android.com/tools"
+    package="dev.haenara.bricksharepref">
+    <uses-sdk tools:overrideLibrary="androidx.security"/>
+</manifest>
