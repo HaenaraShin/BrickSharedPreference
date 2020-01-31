@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Base64
 import android.util.Log
+import dev.haenara.security.BrickCipher
 import org.json.JSONObject
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -15,8 +16,9 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
 
     private val mSharedPreferences = mContext.getSharedPreferences("${BRICK_FILE_PREFIX}$mFile", Context.MODE_PRIVATE)
     private val mKey = getKey()
+    private val cipher = BrickCipher.getInstance(mKey)
 
-    private fun getKey(): Any {
+    private fun getKey(): String {
         var packageInfo: PackageInfo? = null
         try {
             packageInfo = mContext.getPackageManager().getPackageInfo(
@@ -93,8 +95,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
             = get(key)?.decrypt() ?: defValue
 
     private fun String.decrypt() : String {
-        // TODO
-        return replace("encrypted_" , "")
+        return cipher.decrypt(this)
     }
 
     inner class Editor : SharedPreferences.Editor by mSharedPreferences.edit(){
@@ -128,8 +129,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
                 = mSharedPreferences.edit().putString(encrypt(key ?: ""), encrypt(value))
 
         private fun encrypt(plain: String) : String {
-            // TODO
-            return "encrypted_$plain"
+            return cipher.encrypt(plain)
         }
     }
 }
