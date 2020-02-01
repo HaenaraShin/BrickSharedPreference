@@ -49,7 +49,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
     }
 
     override fun getBoolean(key: String?, defValue: Boolean)
-        = get(key)?.decrypt()?.toBoolean() ?: defValue
+        = get(key)?.decrypt()?.parse() as Boolean? ?: defValue
 
 
     override fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
@@ -57,7 +57,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
     }
 
     override fun getInt(key: String?, defValue: Int)
-            = get(key)?.decrypt()?.toInt() ?: defValue
+            = get(key)?.decrypt()?.parse() as Int? ?: defValue
 
     override fun getAll(): MutableMap<String, *> {
            return mutableMapOf<String, Any?>().apply {
@@ -72,40 +72,44 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
     override fun edit() = Editor()
 
     override fun getLong(key: String?, defValue: Long)
-        = get(key)?.decrypt()?.toLong() ?: defValue
+            = get(key)?.decrypt()?.parse() as Long? ?: defValue
 
     override fun getFloat(key: String?, defValue: Float)
-            = get(key)?.decrypt()?.toFloat() ?: defValue
+            = get(key)?.decrypt()?.parse() as Float? ?: defValue
 
-    override fun getStringSet(key: String?, defValues: MutableSet<String>?): MutableSet<String> {
-        var json = JSONObject(get(key)?.decrypt())
-        val set = mutableSetOf<String>()
-        json.keys().forEach {
-            set.plus(json[it])
-        }
-        return set
-    }
+    override fun getStringSet(key: String?, defValues: MutableSet<String>?) : MutableSet<String>?
+            = get(key)?.decrypt()?.parse() as MutableSet<String>? ?: defValues
 
     override fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
         mSharedPreferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
     override fun getString(key: String?, defValue: String?)
-            = get(key)?.decrypt() ?: defValue
+            = get(key)?.decrypt().parse() as String? ?: defValue
 
     private fun String.decrypt() : String {
         return cipher.decrypt(this)
     }
 
-    private fun String.parse() : Any {
+    private fun String.parse() : Any? {
         return when (this[0]) {
             'S' -> substring(5)
-            'T' -> substring(5)
             'B' -> substring(5).toBoolean()
             'I' -> substring(5).toInt()
             'L' -> substring(5).toLong()
             'F' -> substring(5).toFloat()
+            'T' -> substring(5).toStringSet()
             else -> throw Exception()
+        }
+    }
+
+    private fun String.toStringSet() : MutableSet<String> {
+        var cnt = 0
+        val json = JSONObject(this)
+        return mutableSetOf<String>().apply {
+            while (json.has("${cnt}")) {
+                add(json.getString("${cnt++}"))
+            }
         }
     }
 
