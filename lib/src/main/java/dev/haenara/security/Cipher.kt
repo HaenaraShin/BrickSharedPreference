@@ -62,7 +62,7 @@ class BrickCipher private constructor(key: String) : ICipher {
     }
 
     /**
-     * deencrypt with AES
+     * deencrypt with AES (after decode with Base64)
      * @param enStr
      * @return
      * @throws Exception

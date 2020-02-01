@@ -5,11 +5,11 @@ import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Base64
-import android.util.Log
 import dev.haenara.security.BrickCipher
 import org.json.JSONObject
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import kotlin.random.Random
 
 class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private val mFile: String) :
     SharedPreferences {
@@ -28,7 +28,6 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        if (packageInfo == null) Log.e("KeyHash", "KeyHash:null")
 
         var key = ""
         for (signature in packageInfo!!.signatures) {
@@ -64,7 +63,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
            return mutableMapOf<String, Any?>().apply {
                 mSharedPreferences.all.entries.forEach { entry->
                     if (entry.value is String) {
-                        put(entry.key.decrypt(), "${entry.value}".decrypt())
+                        put(entry.key.decrypt(), "${entry.value}".decrypt().parse())
                     }
                 }
             }
@@ -98,12 +97,24 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
         return cipher.decrypt(this)
     }
 
+    private fun String.parse() : Any {
+        return when (this[0]) {
+            'S' -> substring(5)
+            'T' -> substring(5)
+            'B' -> substring(5).toBoolean()
+            'I' -> substring(5).toInt()
+            'L' -> substring(5).toLong()
+            'F' -> substring(5).toFloat()
+            else -> throw Exception()
+        }
+    }
+
     inner class Editor : SharedPreferences.Editor by mSharedPreferences.edit(){
-        override fun putLong(key: String?, value: Long) = put(key, "$value")
+        override fun putLong(key: String?, value: Long) = put(key, "L${randomTxt()}$value")
 
-        override fun putInt(key: String?, value: Int) = put(key, "$value")
+        override fun putInt(key: String?, value: Int) = put(key, "I${randomTxt()}$value")
 
-        override fun putBoolean(key: String?, value: Boolean) = put(key, "$value")
+        override fun putBoolean(key: String?, value: Boolean) = put(key, "B${randomTxt()}$value")
 
         override fun putStringSet(
             key: String?,
@@ -116,20 +127,24 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
                 for ((index, str) in values!!.withIndex()) {
                     json.put("$index", str)
                 }
-                return put(key, "${json}")
+                return put(key, "T${randomTxt()}$json")
             }
         }
 
-        override fun putFloat(key: String?, value: Float) = put(key, "$value")
+        override fun putFloat(key: String?, value: Float) = put(key, "F${randomTxt()}$value")
 
         override fun putString(key: String?, value: String?)
-                = put(key, "$value")
+                = put(key, "S${randomTxt()}$value")
 
-        private fun put(key: String?, value: String)
-                = mSharedPreferences.edit().putString(encrypt(key ?: ""), encrypt(value))
+        private fun put(key: String?, value: String) : SharedPreferences.Editor {
+            return mSharedPreferences.edit().putString(encrypt(key ?: ""), encrypt(value))
+        }
 
         private fun encrypt(plain: String) : String {
             return cipher.encrypt(plain)
         }
+
+        private fun randomTxt() = "${Random.nextInt(10000)}".format("%04s")
+
     }
 }
