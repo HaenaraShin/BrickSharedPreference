@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Base64
+import android.util.Log
 import dev.haenara.security.BrickCipher
 import org.json.JSONObject
 import java.security.MessageDigest
@@ -14,7 +15,8 @@ import kotlin.random.Random
 class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private val mFile: String) :
     SharedPreferences {
 
-    private val mSharedPreferences = mContext.getSharedPreferences("${BRICK_FILE_PREFIX}$mFile", Context.MODE_PRIVATE)
+    private val mSharedPreferences =
+        mContext.getSharedPreferences("${BRICK_FILE_PREFIX}$mFile", Context.MODE_PRIVATE)
     private val mKey = getKey()
     private val cipher = BrickCipher.getInstance(mKey)
 
@@ -35,21 +37,22 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
                 val md: MessageDigest = MessageDigest.getInstance("SHA")
                 md.update(signature.toByteArray())
                 key = Base64.encodeToString(md.digest(), Base64.DEFAULT)
-            } catch (e: NoSuchAlgorithmException) { }
+            } catch (e: NoSuchAlgorithmException) {
+            }
         }
         return key
     }
 
-    private fun get(key: String?) : String? {
-        return mSharedPreferences.getString(key, null)
+    private fun get(key: String?): String? {
+        return mSharedPreferences.getString(encrypt(key), null)
     }
 
     override fun contains(key: String?): Boolean {
-        return mSharedPreferences.contains(key)
+        return mSharedPreferences.contains(encrypt(key ?: ""))
     }
 
     override fun getBoolean(key: String?, defValue: Boolean)
-        = get(key)?.decrypt()?.parse() as Boolean? ?: defValue
+            = get(key)?.decrypt()?.parse() as Boolean? ?: defValue
 
 
     override fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
@@ -85,10 +88,10 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
     }
 
     override fun getString(key: String?, defValue: String?)
-            = get(key)?.decrypt().parse() as String? ?: defValue
+            = get(key)?.decrypt()?.parse() as String? ?: defValue
 
     private fun String.decrypt() : String {
-        return cipher.decrypt(this)
+         return cipher.decrypt(this)
     }
 
     private fun String.parse() : Any? {
@@ -111,6 +114,10 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
                 add(json.getString("${cnt++}"))
             }
         }
+    }
+
+    private fun encrypt(plain: String?) : String {
+        return cipher.encrypt(plain ?: "")
     }
 
     inner class Editor : SharedPreferences.Editor by mSharedPreferences.edit(){
@@ -142,10 +149,6 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
 
         private fun put(key: String?, value: String) : SharedPreferences.Editor {
             return mSharedPreferences.edit().putString(encrypt(key ?: ""), encrypt(value))
-        }
-
-        private fun encrypt(plain: String) : String {
-            return cipher.encrypt(plain)
         }
 
         private fun randomTxt() = "${Random.nextInt(10000)}".format("%04s")
