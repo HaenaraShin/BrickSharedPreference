@@ -6,20 +6,20 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-
+const val KEY_SIZE = 16
 interface ICipher {
     fun encrypt(plain: String) : String
     fun decrypt(encrypted: String) : String
 }
 
-class BrickCipher private constructor(key: String) : ICipher {
+class BrickCipher private constructor(key: ByteArray) : ICipher {
     private val keySpec : Key = getAESKey(key)
     private val cipher : Cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
 
     companion object {
         @Volatile private var instance: BrickCipher? = null
 
-        @JvmStatic fun getInstance(key: String): BrickCipher =
+        @JvmStatic fun getInstance(key: ByteArray): BrickCipher =
             instance ?: synchronized(this) {
                 instance ?: BrickCipher(key).also {
                     instance = it
@@ -27,17 +27,16 @@ class BrickCipher private constructor(key: String) : ICipher {
             }
     }
 
-    fun getAESKey(key: String): Key {
+    fun getAESKey(key: ByteArray): Key {
         val keySpec: Key
-        val keyBytes = ByteArray(16)
-        val b = key.toByteArray(charset("UTF-8"))
+        val keyBytes = ByteArray(KEY_SIZE)
 
-        var len = b.size
+        var len = key.size
         if (len > keyBytes.size) {
             len = keyBytes.size
         }
 
-        System.arraycopy(b, 0, keyBytes, 0, len)
+        System.arraycopy(key, 0, keyBytes, 0, len)
         keySpec = SecretKeySpec(keyBytes, "AES")
 
         return keySpec

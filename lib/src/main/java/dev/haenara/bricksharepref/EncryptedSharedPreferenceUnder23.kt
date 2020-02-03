@@ -20,27 +20,25 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
     private val mKey = getKey()
     private val cipher = BrickCipher.getInstance(mKey)
 
-    private fun getKey(): String {
+    private fun getKey(): ByteArray {
         var packageInfo: PackageInfo? = null
         try {
-            packageInfo = mContext.getPackageManager().getPackageInfo(
-                mContext.getPackageName(),
+            packageInfo = mContext.packageManager.getPackageInfo(
+                mContext.packageName,
                 PackageManager.GET_SIGNATURES
             )
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
 
-        var key = ""
         for (signature in packageInfo!!.signatures) {
             try {
                 val md: MessageDigest = MessageDigest.getInstance("SHA")
                 md.update(signature.toByteArray())
-                key = Base64.encodeToString(md.digest(), Base64.DEFAULT)
-            } catch (e: NoSuchAlgorithmException) {
-            }
+                return md.digest()
+            } catch (e: NoSuchAlgorithmException) { }
         }
-        return key
+        return MessageDigest.getInstance("SHA").digest(packageInfo.packageName.toByteArray())
     }
 
     private fun get(key: String?): String? {
