@@ -65,7 +65,7 @@ class BrickSharedPreferences (private val mContext: Context, private val mFile: 
 
     companion object SharePreferencesFactory {
         private fun getInstance(file: String, context: Context) : SharedPreferences {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // Use Jetpack (minSdk 23)
                 EncryptedSharedPreferences.create(
                     "$BRICK_FILE_PREFIX$file",

@@ -62,14 +62,14 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
     override fun getInt(key: String?, defValue: Int)
             = get(key)?.decrypt()?.parse() as Int? ?: defValue
 
-    override fun getAll(): MutableMap<String, *> {
+    override fun getAll(): Map<String, *> {
            return mutableMapOf<String, Any?>().apply {
                 mSharedPreferences.all.entries.forEach { entry->
                     if (entry.value is String) {
                         put(entry.key.decrypt(), "${entry.value}".decrypt().parse())
                     }
                 }
-            }
+            }.toMap()
     }
 
     override fun edit() = Editor()
@@ -151,7 +151,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
             return mSharedPreferences.edit().putString(encrypt(key ?: ""), encrypt(value))
         }
 
-        private fun randomTxt() = "${Random.nextInt(10000)}".format("%04s")
+        private fun randomTxt() = String.format("%04d", Random.nextInt(10000))
 
     }
 }
