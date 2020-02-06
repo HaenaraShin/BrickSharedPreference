@@ -12,6 +12,10 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.random.Random
 
+/**
+ * Custom EncrytpedSharedPreferences for under sdk 23.
+ * Since AndroidX Security no support sdk under 23, developer should use custom EncryptedSharedPreferences.
+ */
 class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private val mFile: String) :
     SharedPreferences {
 
@@ -20,6 +24,9 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
     private val mKey = getKey()
     private val cipher = BrickCipher.getInstance(mKey)
 
+    /**
+     * For make AES key, use signature.
+     */
     private fun getKey(): ByteArray {
         var packageInfo: PackageInfo? = null
         try {
@@ -41,25 +48,44 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
         return MessageDigest.getInstance("SHA").digest(packageInfo.packageName.toByteArray())
     }
 
+    /**
+     * Every encrypted data is actually stored with string regardless of its type.
+     */
     private fun get(key: String?): String? {
         return mSharedPreferences.getString(encrypt(key), null)
     }
 
+    /**
+     * Returns if this SharedPreferences has a specific value with its key.
+     * Since the key is also encrytped, check with an encrypted key.
+     */
     override fun contains(key: String?): Boolean {
         return mSharedPreferences.contains(encrypt(key ?: ""))
     }
 
+    /**
+     * Get a boolean value
+     */
     override fun getBoolean(key: String?, defValue: Boolean)
             = get(key)?.decrypt()?.parse() as Boolean? ?: defValue
 
 
+    /**
+     * Same as normal SharedPreferences.
+     */
     override fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
+    /**
+     * Get an int value
+     */
     override fun getInt(key: String?, defValue: Int)
             = get(key)?.decrypt()?.parse() as Int? ?: defValue
 
+    /**
+     * Get a set of all data
+     */
     override fun getAll(): Map<String, *> {
            return mutableMapOf<String, Any?>().apply {
                 mSharedPreferences.all.entries.forEach { entry->
@@ -70,28 +96,54 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
             }.toMap()
     }
 
+    /**
+     * Get Editor to put some data into storage.
+     * Same as normal SharedPreferences.
+     */
     override fun edit() = Editor()
 
+    /**
+     * Get a long value.
+     */
     override fun getLong(key: String?, defValue: Long)
             = get(key)?.decrypt()?.parse() as Long? ?: defValue
 
+    /**
+     * Get a float value.
+     */
     override fun getFloat(key: String?, defValue: Float)
             = get(key)?.decrypt()?.parse() as Float? ?: defValue
 
+    /**
+     * Get a string set data.
+     */
     override fun getStringSet(key: String?, defValues: MutableSet<String>?) : MutableSet<String>?
             = get(key)?.decrypt()?.parse() as MutableSet<String>? ?: defValues
 
+    /**
+     * Same as normal SharedPreferences.
+     */
     override fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
         mSharedPreferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
+    /**
+     * Get a string value.
+     */
     override fun getString(key: String?, defValue: String?)
             = get(key)?.decrypt()?.parse() as String? ?: defValue
 
+    /**
+     * Decrypt string text.
+     */
     private fun String.decrypt() : String {
          return cipher.decrypt(this)
     }
 
+    /**
+     * To configure which type is the value, add a prefix on a data value.
+     * With the prefix, you can cast into original data type.
+     */
     private fun String.parse() : Any? {
         return when (this[0]) {
             'S' -> substring(5)
@@ -102,8 +154,11 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
             'T' -> substring(5).toStringSet()
             else -> throw Exception()
         }
-    }
 
+    }
+    /**
+     * Convert a string value into a set
+     */
     private fun String.toStringSet() : MutableSet<String> {
         var cnt = 0
         val json = JSONObject(this)
@@ -114,6 +169,9 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
         }
     }
 
+    /**
+     * Encrypt a string text.
+     */
     private fun encrypt(plain: String?) : String {
         return cipher.encrypt(plain ?: "")
     }
