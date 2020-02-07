@@ -176,13 +176,32 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
         return cipher.encrypt(plain ?: "")
     }
 
+    /**
+     * Editor is defined by delegation.
+     * When save a value, add a prefix shows what type is and 4 digits random integer to make
+     * encrypted text would be differ every time.
+     * Unless random text is used, every same value has same encrypted text so it could be guessed.
+     */
     inner class Editor : SharedPreferences.Editor by mSharedPreferences.edit(){
+
+        /**
+         * Put a long value.
+         */
         override fun putLong(key: String?, value: Long) = put(key, "L${randomTxt()}$value")
 
+        /**
+         * Put an int value
+         */
         override fun putInt(key: String?, value: Int) = put(key, "I${randomTxt()}$value")
 
+        /**
+         * Put a boolean value
+         */
         override fun putBoolean(key: String?, value: Boolean) = put(key, "B${randomTxt()}$value")
 
+        /**
+         * Put a string value set.
+         */
         override fun putStringSet(
             key: String?,
             values: MutableSet<String>?
@@ -190,6 +209,7 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
             if (key.isNullOrEmpty() or values.isNullOrEmpty()) {
                 return this
             } else {
+                // Parsing with JSON.
                 val json = JSONObject()
                 for ((index, str) in values!!.withIndex()) {
                     json.put("$index", str)
@@ -198,15 +218,27 @@ class EncryptedSharedPreferenceUnder23 (private val mContext: Context, private v
             }
         }
 
+        /**
+         * Put a float value.
+         */
         override fun putFloat(key: String?, value: Float) = put(key, "F${randomTxt()}$value")
 
+        /**
+         * Put a string value.
+         */
         override fun putString(key: String?, value: String?)
                 = put(key, "S${randomTxt()}$value")
 
+        /**
+         * Every value is stored with string like AndroidX EncryptedSharedPreferences.
+         */
         private fun put(key: String?, value: String) : SharedPreferences.Editor {
             return mSharedPreferences.edit().putString(encrypt(key ?: ""), encrypt(value))
         }
 
+        /**
+         * Make 4 digits random integer.
+         */
         private fun randomTxt() = String.format("%04d", Random.nextInt(10000))
 
     }
