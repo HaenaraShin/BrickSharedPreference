@@ -44,6 +44,7 @@ class BrickSharedPreferences (private val mContext: Context, private val mFile: 
                 is Int -> this.edit().putInt(it.key, it.value as Int).apply()
                 is Float -> this.edit().putFloat(it.key, it.value as Float).apply()
                 is Boolean -> this.edit().putBoolean(it.key, it.value as Boolean).apply()
+                is Set<*> -> this.edit().putStringSet(it.key, it.value as Set<String>).apply()
             }
         }
     }
