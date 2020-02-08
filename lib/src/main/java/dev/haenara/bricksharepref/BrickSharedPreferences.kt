@@ -63,6 +63,11 @@ class BrickSharedPreferences (private val mContext: Context, private val mFile: 
 
     val legacy = LegacySharedPreferences()
 
+    /**
+     * A factory to return an EncryptedSharedPreferences instance regard of sdk version.
+     * Over api 23 would get an AndroidX EncryptedSharedPreferences instance.
+     * Under api 23 would get a custom EncryptedSharedPreferences instance.
+     */
     companion object SharePreferencesFactory {
         private fun getInstance(file: String, context: Context) : SharedPreferences {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
