@@ -59,7 +59,7 @@ class EncryptedSharedPreferenceUnder23Test {
     @After
     fun resetTest(){
         spEncrypt.edit().clear().apply()
-        spJetpack.edit().clear().apply()
+        spJetpack.edit().clear().commit()
         spLegacy.edit().clear().apply()
     }
 
