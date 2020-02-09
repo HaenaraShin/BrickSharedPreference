@@ -73,12 +73,7 @@ class BrickSharedPreferences (private val mContext: Context, private val mFile: 
         private fun getInstance(file: String, context: Context) : SharedPreferences {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // Use Jetpack (minSdk 23)
-                EncryptedSharedPreferences.create(
-                    "$BRICK_FILE_PREFIX$file",
-                    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-                    context,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+                EncryptedSharedPreferenceOver23(context, file)
             } else {
                 // Without Jetpack (minSdk 19)
                 EncryptedSharedPreferenceUnder23(context, file)
