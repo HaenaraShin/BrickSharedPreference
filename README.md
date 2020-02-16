@@ -15,6 +15,14 @@ Support migration legacy SharedPreferences to EncryptedSharedPreferences.
 
 # How To Use
 
+## Sample Run 
+
+![Sample run](brick_sample_run.gif)
+
+Sample app shows how BrickSharedPreferences works.
+
+## Hot it works
+
 ![How it works](how_it_works.PNG)
 
 BrickSharedPreferences deletes the legacy SharedPreferences file, and copies and encrypts as a new file name start with  "brick_".
