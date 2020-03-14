@@ -1,6 +1,77 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+group = rootProject.ext.packageName
+version = rootProject.ext.libVersionName
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name rootProject.ext.projectName
+            description rootProject.ext.description
+            url rootProject.ext.defaultUrl
+
+            packaging 'aar'
+            groupId rootProject.ext.packageName
+            artifactId rootProject.ext.libraryName
+            version rootProject.ext.libVersionName
+
+            scm {
+                connection rootProject.ext.defaultRepoUrl
+                developerConnection rootProject.ext.defaultRepoUrl
+                url rootProject.ext.defaultUrl
+            }
+
+            developers {
+                developer {
+                    id 'haenarashin'
+                    name 'Haenara Shin'
+                    email 'dev.heavybros@gmail.com'
+                }
+            }
+        }
+    }
+}
+
+
+bintray {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    user = properties.getProperty('bintrayUser')
+    key = properties.getProperty('bintrayApiKey')
+
+    configurations = ['archives'] // When uploading configuration files
+
+    publish = true // aar 파일을 bintray에서 자동으로 배포
+
+    pkg {
+        repo = rootProject.ext.projectName
+        name = project.name
+        userOrg = 'heavybros'
+        desc = rootProject.ext.description
+        licenses = ['MIT']
+
+        vcsUrl = rootProject.ext.defaultRepoUrl
+        websiteUrl = rootProject.ext.defaultUrl
+
+        labels = ['aar', 'android']
+        publicDownloadNumbers = true
+        githubRepo = 'HaenaraShin/BrickSharedPreference'
+
+        version {
+            name = rootProject.ext.libVersionName
+            desc = rootProject.ext.description
+            released  = new Date()
+            vcsTag = rootProject.ext.libVersionName
+        }
+    }
+}
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -10,7 +81,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName rootProject.ext.libVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -33,4 +104,19 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+task findConventions  {
+    doLast {
+        println project.getConvention()
+    }
 }
