@@ -11,24 +11,21 @@ Simple way to keep your SharedPreferences secure and safe.
 
 Support migration legacy SharedPreferences to EncryptedSharedPreferences.
 
-- **Require minSdk 19.**
+- **Require minSdk 16.**
 
 # How To Use
 
-## Sample Run 
 
-![Sample run](brick_sample_run.gif)
+## Installation
 
-Sample app shows how BrickSharedPreferences works.
+Add the following dependency to your `build.gradle` file:
 
-## Hot it works
-
-![How it works](how_it_works.PNG)
-
-BrickSharedPreferences deletes the legacy SharedPreferences file, and copies and encrypts as a new file name start with  "brick_".
-
-After migration, just use a BrickSharedPreferences instance instead of SharedPreferences. 
-
+```
+dependencies {
+    implementation 'dev.haenara:bricksharedpref:1.0.1'
+    implementation "androidx.security:security-crypto:1.0.0-alpha02"
+}
+```
 
 ## How to Migrate
 
@@ -49,6 +46,22 @@ All you have to do is changing codes like this:
 mSharedPreferences = getBrickSharedPreferences(fileName, Context.MODE_PRIVATE)
 ```
 And all is done! 🎉
+
+
+# Sample Run
+
+![Sample run](brick_sample_run.gif)
+
+Sample app shows how BrickSharedPreferences works.
+
+
+# Hot it works
+
+![How it works](how_it_works.PNG)
+
+BrickSharedPreferences deletes the legacy SharedPreferences file, and copies and encrypts as a new file name start with  "brick_".
+
+After migration, just use a BrickSharedPreferences instance instead of SharedPreferences.
 
 
 # Licences
