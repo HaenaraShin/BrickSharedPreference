@@ -1,2 +1,2 @@
-include ':app', ':lib'
+include ':app', ':bricksharedpref'
 rootProject.name='BrickSharedPrefSample'

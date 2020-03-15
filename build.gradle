@@ -31,7 +31,7 @@ ext {
     description = 'EncryptedSharedPreferences Migration Support Library For Android.'
     packageName = 'dev.haenara'
     libraryName = 'bricksharedpref'
-    libVersionName = '1.0.0'
+    libVersionName = '1.0.1'
     defaultRepoUrl = 'https://github.com/HaenaraShin/BrickSharedPreference.git'
     defaultUrl = 'https://github.com/HaenaraShin/BrickSharedPreference'
 

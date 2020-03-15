@@ -50,7 +50,7 @@ bintray {
 
     pkg {
         repo = rootProject.ext.projectName
-        name = project.name
+        name = rootProject.ext.libraryName
         userOrg = user
         desc = rootProject.ext.description
         licenses = ['MIT']
