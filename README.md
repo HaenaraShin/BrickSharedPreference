@@ -11,7 +11,7 @@ Simple way to keep your SharedPreferences secure and safe.
 
 Support migration legacy SharedPreferences to EncryptedSharedPreferences.
 
-- **Require minSdk 16.**
+- **Require minSdk 14.**
 
 # How To Use
 
@@ -22,7 +22,7 @@ Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
-    implementation 'dev.haenara:bricksharedpref:1.0.1'
+    implementation 'dev.haenara:bricksharedpref:1.0.2'
     implementation "androidx.security:security-crypto:1.0.0-alpha02"
 }
 ```
@@ -41,9 +41,17 @@ After migration, use a BrickSharedPreferences instance instead of SharedPreferen
 
 All you have to do is changing codes like this:  
 
+### Kotlin
+
 ```
 // Only difference is adding "Brick" when you get SharedPreferences. 
-mSharedPreferences = getBrickSharedPreferences(fileName, Context.MODE_PRIVATE)
+mSharedPreferences = context.getBrickSharedPreferences(fileName, Context.MODE_PRIVATE)
+```
+
+### Java
+
+```
+mSharedPreferences = new BrickSharedPreferences(context, fileName);
 ```
 And all is done! 🎉
 
