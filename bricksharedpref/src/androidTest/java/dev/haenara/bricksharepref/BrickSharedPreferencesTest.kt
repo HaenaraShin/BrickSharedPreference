@@ -2,11 +2,10 @@ package dev.haenara.bricksharepref
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
+import androidx.core.content.edit
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Test
-
 import org.junit.Assert.*
 import org.junit.Before
 
@@ -31,20 +30,22 @@ class BrickSharedPreferencesTest {
     val VALUE_LONG = 12345L
 
     @Before
-    fun setupTest(){
+    fun setupTest() {
     }
 
     private fun SharedPreferences.putDummyData() {
-        edit().putString(KEY_STRING, VALUE_STRING).apply()
-        edit().putBoolean(KEY_BOOL, VALUE_BOOL).apply()
-        edit().putInt(KEY_INT, VALUE_INT).apply()
-        edit().putFloat(KEY_FLOAT, VALUE_FLOAT).apply()
-        edit().putStringSet(KEY_STRING_SET, VALUE_STRING_SET).apply()
-        edit().putLong(KEY_LONG, VALUE_LONG).apply()
+        edit {
+            putString(KEY_STRING, VALUE_STRING)
+            putBoolean(KEY_BOOL, VALUE_BOOL)
+            putInt(KEY_INT, VALUE_INT)
+            putFloat(KEY_FLOAT, VALUE_FLOAT)
+            putStringSet(KEY_STRING_SET, VALUE_STRING_SET)
+            putLong(KEY_LONG, VALUE_LONG)
+        }
     }
 
     @After
-    fun resetTest(){
+    fun resetTest() {
         spBrick.edit().clear().commit()
         spLegacy.edit().clear().apply()
     }
@@ -54,8 +55,8 @@ class BrickSharedPreferencesTest {
     fun getMFileName() {
         val sampleFileName = "sample"
         assertEquals(
-                "brick_sample",
-                BrickSharedPreferences(appContext, sampleFileName).mFileName
+            "brick_sample",
+            BrickSharedPreferences(appContext, sampleFileName).mFileName
         )
     }
 
@@ -183,7 +184,12 @@ class BrickSharedPreferencesTest {
     fun getStringSet() {
         spBrick.putDummyData()
         spLegacy.putDummyData()
-        assertTrue(spLegacy.getStringSet(KEY_STRING_SET, mutableSetOf("")) == spBrick.getStringSet(KEY_STRING_SET, mutableSetOf()))
+        assertTrue(
+            spLegacy.getStringSet(KEY_STRING_SET, mutableSetOf("")) == spBrick.getStringSet(
+                KEY_STRING_SET,
+                mutableSetOf()
+            )
+        )
     }
 
     @Test
