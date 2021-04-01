@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "dev.haenara.bricksharepref.sample"
         minSdkVersion 16
@@ -35,6 +35,5 @@ dependencies {
 
     // For BrickSharedPreferences
     implementation 'dev.haenara:bricksharedpref:1.0.1'
-    implementation "androidx.security:security-crypto:1.0.0-alpha02"
-
+    implementation "androidx.security:security-crypto:1.1.0-alpha03"
 }
