@@ -3,6 +3,8 @@
 
 ![BrickSharedPreferences](brick_title.png)
 
+[ ![Download](https://api.bintray.com/packages/haenarashin/BrickSharedPreferences/bricksharedpref/images/download.svg?version=1.0.2) ](https://bintray.com/haenarashin/BrickSharedPreferences/bricksharedpref/1.0.2/link)
+
 🔒 EncryptedSharedPreferences Migration Support Library For Android.
 
 # Introduce
