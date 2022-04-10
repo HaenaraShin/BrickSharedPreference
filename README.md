@@ -3,9 +3,9 @@
 
 ![BrickSharedPreferences](brick_title.png)
 
-[ ![Download](https://api.bintray.com/packages/haenarashin/BrickSharedPreferences/bricksharedpref/images/download.svg?version=1.0.2) ](https://bintray.com/haenarashin/BrickSharedPreferences/bricksharedpref/1.0.2/link)
-
 🔒 EncryptedSharedPreferences Migration Support Library For Android.
+
+📌 자세한 설명은 [블로그](https://haenarashin.github.io/android,/security/2021/01/24/brick.html)에서 확인하실 수 있습니다.
 
 # Introduce
 
